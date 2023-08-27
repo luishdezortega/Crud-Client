@@ -1,5 +1,8 @@
 package com.gml.client.infrastructure.controller;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +19,10 @@ import com.gml.client.application.dto.PaginationResponseDto;
 import com.gml.client.application.handler.CreateClientHandler;
 import com.gml.client.application.handler.SearchClientHandler;
 import com.gml.client.domain.model.Client;
+import com.gml.client.domain.service.ExcelGenerator;
 
 import io.swagger.annotations.Api;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Api("Api Rest para consultar información del empleado")
 @RestController
@@ -44,6 +49,19 @@ public class ClientController {
 			@RequestParam(defaultValue = "5", required = false) Integer pageSize,
 			@RequestParam(defaultValue = "0", required = false) Integer page) {
 		return ResponseEntity.ok(searchClientHandler.getAllResults(pageSize, page));
+	}
+
+	@GetMapping("/export")
+	public void exportIntoExcelFile(HttpServletResponse response) throws IOException {
+		response.setContentType("application/octet-stream");
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=client.xlsx";
+		response.setHeader(headerKey, headerValue);
+
+		List<Client> listOfCLients = searchClientHandler.getAllResults(10, 0).getResponseDto();
+
+		ExcelGenerator generator = new ExcelGenerator(listOfCLients);
+		generator.generateExcelFile(response);
 	}
 
 	@PostMapping("/client")
