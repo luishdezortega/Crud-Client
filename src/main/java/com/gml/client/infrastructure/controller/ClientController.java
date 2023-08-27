@@ -18,6 +18,7 @@ import com.gml.client.application.dto.ClientResponseDto;
 import com.gml.client.application.dto.PaginationResponseDto;
 import com.gml.client.application.handler.CreateClientHandler;
 import com.gml.client.application.handler.SearchClientHandler;
+import com.gml.client.application.validation.exception.ClientException;
 import com.gml.client.domain.model.Client;
 import com.gml.client.domain.service.ExcelGenerator;
 
@@ -59,6 +60,10 @@ public class ClientController {
 		response.setHeader(headerKey, headerValue);
 
 		List<Client> listOfCLients = searchClientHandler.getAllResults(10, 0).getResponseDto();
+
+		if (listOfCLients.size() == 0) {
+			throw new ClientException("The list of clients is 0");
+		}
 
 		ExcelGenerator generator = new ExcelGenerator(listOfCLients);
 		generator.generateExcelFile(response);
