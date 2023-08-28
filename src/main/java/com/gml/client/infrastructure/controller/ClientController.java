@@ -3,6 +3,8 @@ package com.gml.client.infrastructure.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @CrossOrigin(origins = "*")
 @RequestMapping("/api")
 public class ClientController {
+
+	Logger logger = LoggerFactory.getLogger(ClientController.class);
 
 	private final CreateClientHandler createClientHandler;
 
@@ -62,6 +66,7 @@ public class ClientController {
 		List<Client> listOfCLients = searchClientHandler.getAllResults(10, 0).getResponseDto();
 
 		if (listOfCLients.size() == 0) {
+			logger.error("The customer list is empty");
 			throw new ClientException("The list of clients is 0");
 		}
 

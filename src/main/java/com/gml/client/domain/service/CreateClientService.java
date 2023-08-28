@@ -2,12 +2,17 @@ package com.gml.client.domain.service;
 
 import java.time.LocalDate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gml.client.domain.model.Client;
 import com.gml.client.domain.port.CreateClientRepository;
 import com.gml.client.domain.port.GetClientRepository;
 import com.gml.client.domain.validation.exception.ClientException;
 
 public class CreateClientService {
+
+	Logger logger = LoggerFactory.getLogger(CreateClientService.class);
 
 	private static final String SHARED_KEY_EXITS = "The generated shared key already exists in the system, contact support";
 
@@ -28,10 +33,13 @@ public class CreateClientService {
 
 		try {
 			if (getClientRepository.execute(sharedKey) != null) {
+				logger.error("There is a client with the same name");
 				throw new ClientException(SHARED_KEY_EXITS);
 			}
+			logger.info("No customer with the same name found");
 		} catch (ClientException e) {
 			if (e.getMessage().equals(SHARED_KEY_EXITS)) {
+				logger.error("There is a client with the same name");
 				throw new ClientException(SHARED_KEY_EXITS);
 			}
 		}

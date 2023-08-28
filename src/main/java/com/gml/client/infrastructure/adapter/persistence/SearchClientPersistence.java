@@ -2,6 +2,8 @@ package com.gml.client.infrastructure.adapter.persistence;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -17,6 +19,8 @@ import com.gml.client.infrastructure.adapter.persistence.repository.ClientReposi
 
 @Repository
 public class SearchClientPersistence implements ListClientsRepository, GetClientRepository {
+
+	Logger logger = LoggerFactory.getLogger(SearchClientPersistence.class);
 
 	private static final String NO_FOUND = "No results found";
 
@@ -45,6 +49,7 @@ public class SearchClientPersistence implements ListClientsRepository, GetClient
 		if (result.isPresent()) {
 			return clientEntityMapper.toModel(result.get());
 		}
+		logger.error("No client found with supplied sharedkey");
 		throw new ClientException(NO_FOUND);
 	}
 }
